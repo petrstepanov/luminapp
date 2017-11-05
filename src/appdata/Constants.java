@@ -6,7 +6,7 @@ public class Constants {
 	
 
 	public static int WINDOW_WIDTH = 480;
-	public static int WINDOW_HEIGHT = 350;
+	public static int WINDOW_HEIGHT = 380;
 	
 	public static int LEFT_PANEL_WIDTH = 250;
 

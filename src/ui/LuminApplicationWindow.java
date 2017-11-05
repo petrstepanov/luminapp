@@ -7,12 +7,19 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -27,7 +34,7 @@ import javax.swing.filechooser.FileSystemView;
 import model.SpecrtrumProcessor;
 import appdata.Constants;
 
-public class LuminApplicationWindow implements ActionListener{
+public class LuminApplicationWindow implements ActionListener, PropertyChangeListener, ItemListener {
 
 	private JFrame frame;
 
@@ -49,10 +56,16 @@ public class LuminApplicationWindow implements ActionListener{
 
 	private JFileChooser fileChooser = new JFileChooser();	
 
-	JFlatButton btnLoadSpectrums = new JFlatButton("Load Spectra");
-	JFlatButton btnAddTemp = new JFlatButton("Link Temperature");
+	JFlatButton btnLoadSpectrums = new JFlatButton("Load spectra");
+	JFlatButton btnAddTemp = new JFlatButton("Link temperature");
 	JFlatButton btnSaveSpectrum = new JFlatButton("Save");
 
+	JCheckBox chkWavelengthRange;	
+	private int minWavelength = 0;
+	private int maxWavelength = 999;
+	private JFormattedTextField numMinWavelength;
+	private JFormattedTextField numMaxWavelength;
+	
 	FileList spectrumsList;
 	File temperatureFile;
 
@@ -128,6 +141,35 @@ public class LuminApplicationWindow implements ActionListener{
 		bottomPanel.add(bottomNorthPanelContainer);
 		bottomPanel.add(Box.createVerticalStrut(12));
 		
+		JPanel wavelengthRangePanel = new JPanel();
+		wavelengthRangePanel.setLayout(new BoxLayout(wavelengthRangePanel, BoxLayout.X_AXIS));
+		wavelengthRangePanel.add(Box.createHorizontalStrut(10));
+		chkWavelengthRange = new JCheckBox("Wavelength range, nm:");
+		chkWavelengthRange.addItemListener(this);
+		chkWavelengthRange.setSelected(false);
+		wavelengthRangePanel.add(chkWavelengthRange);
+		wavelengthRangePanel.add(Box.createHorizontalStrut(4));
+		
+		NumberFormat integerFieldFormatter;
+		integerFieldFormatter = NumberFormat.getIntegerInstance();
+		integerFieldFormatter.setMaximumFractionDigits(0);
+		numMinWavelength = new JFormattedTextField(integerFieldFormatter);
+		numMinWavelength.setValue(new Integer(minWavelength));
+		numMinWavelength.addPropertyChangeListener("value", this);
+		numMinWavelength.setEnabled(false);	
+		numMinWavelength.setColumns(3);
+		wavelengthRangePanel.add(numMinWavelength);
+		wavelengthRangePanel.add(new JLabel(" - "));
+		numMaxWavelength = new JFormattedTextField(integerFieldFormatter);
+		numMaxWavelength.setValue(new Integer(maxWavelength));
+		numMaxWavelength.addPropertyChangeListener("value", this);
+		numMaxWavelength.setEnabled(false);
+		numMinWavelength.setColumns(3);
+		wavelengthRangePanel.add(numMaxWavelength);
+		wavelengthRangePanel.add(Box.createHorizontalStrut(10));
+		bottomPanel.add(wavelengthRangePanel);
+		bottomPanel.add(Box.createVerticalStrut(10));
+		
 		JPanel bottomMiddlePanel = new JPanel();
 //		bottomMiddlePanel.setBackground(Color.WHITE);
 		bottomMiddlePanel.setLayout(new BoxLayout(bottomMiddlePanel, BoxLayout.X_AXIS));
@@ -185,6 +227,9 @@ public class LuminApplicationWindow implements ActionListener{
 		}
 		else if (e.getSource() == btnSaveSpectrum){
 			SpecrtrumProcessor sp = new SpecrtrumProcessor(spectrumsList.getSelectedObjectsArray());
+			if (chkWavelengthRange.isSelected()){
+				sp.setWavelengthRange(minWavelength, maxWavelength);
+			}
 			if (temperatureFile != null){
 				sp.setTemperatureFile(temperatureFile);
 			}
@@ -197,7 +242,7 @@ public class LuminApplicationWindow implements ActionListener{
             
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 temperatureFile = fileChooser.getSelectedFile();
-    			JLabel l1 = new JLabel("Temperature Data:");
+    			JLabel l1 = new JLabel("Temperature data file:");
                 l1.setForeground(Color.decode("#666666"));        
         		l1.setBorder(new EmptyBorder(15, 15, 15, 15));    			
                 JLabel l2 = new JLabel();
@@ -235,5 +280,26 @@ public class LuminApplicationWindow implements ActionListener{
 			    }
 			}
 		});		
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent e) {
+        Object source = e.getSource();
+        if (source == numMinWavelength) {
+            minWavelength = ((Number)numMinWavelength.getValue()).intValue();
+        } else if (source == numMaxWavelength) {
+            maxWavelength = ((Number)numMaxWavelength.getValue()).intValue();
+        }
+    }
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+        Object source = e.getItemSelectable();
+ 
+        if (source == chkWavelengthRange) {
+            boolean isChecked = chkWavelengthRange.isSelected();
+            numMinWavelength.setEnabled(isChecked);
+            numMaxWavelength.setEnabled(isChecked);
+        }
 	}
 }

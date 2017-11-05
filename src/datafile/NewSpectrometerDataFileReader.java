@@ -59,11 +59,23 @@ public class NewSpectrometerDataFileReader extends DataFileReader {
 					if (data.isEmpty()){
 						data.add(new ArrayList<Double>());
 						data.add(new ArrayList<Double>());
-					}					
+					}
 					
 					// Read data row
-					data.get(0).add(Double.parseDouble(tmp[1]));
-					data.get(1).add(Double.parseDouble(tmp[7]));					
+					// Not sure I'm right here
+					Double wavelength = Double.parseDouble(tmp[1]);
+					Double time = Double.parseDouble(tmp[7]);
+					
+					if (useRange){
+						if (wavelength >= dataMin && wavelength <= dataMax){
+							data.get(0).add(wavelength);
+							data.get(1).add(time);					
+						}
+					}
+					else {
+						data.get(0).add(wavelength);
+						data.get(1).add(time);
+					}
 				}
 			}
 			br.close();

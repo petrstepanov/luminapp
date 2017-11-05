@@ -18,9 +18,19 @@ public class SpecrtrumProcessor {
 	private File[] intensitySpectrums;
 	private File temperatureFile;
 	
+	private int minWavelength;
+	private int maxWavelength;
+	private boolean useWavelengthRange = false;
+	
 	public SpecrtrumProcessor(File[] files){
 		this.intensitySpectrums = files;
 		this.temperatureFile = null;
+	}
+	
+	public void setWavelengthRange(int min, int max){
+		this.minWavelength = min;
+		this.maxWavelength = max;
+		this.useWavelengthRange = true;
 	}
 	
 	public void saveCumulated() {
@@ -32,6 +42,7 @@ public class SpecrtrumProcessor {
 		else {
 			dfr = new NewSpectrometerDataFileReader();
 		}
+		if (useWavelengthRange) dfr.setDataRange(minWavelength, maxWavelength);
 		
 		ArrayList<DataFile> spectrums = new ArrayList<DataFile>();
 

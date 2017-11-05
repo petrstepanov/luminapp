@@ -15,7 +15,6 @@ import model.Util;
 
 public class SpectrometerDataFileReader extends DataFileReader{
 
-
 	protected final String DELIMETER = "\t";
 	
 	@Override
@@ -66,10 +65,21 @@ public class SpectrometerDataFileReader extends DataFileReader{
 						}
 					}					
 					
-					// Read data row
-					for (int i=0; i<tmp.length; i++){
-						data.get(i).add(Double.parseDouble(tmp[i]));
+					Double wavelength = Double.parseDouble(tmp[0]);
+					if (useRange){
+						if (wavelength >= dataMin && wavelength < dataMax){
+							// Read data row
+							for (int i=0; i<tmp.length; i++){
+								data.get(i).add(Double.parseDouble(tmp[i]));
+							}
+						}
 					}
+					else {
+						// Read data row
+						for (int i=0; i<tmp.length; i++){
+							data.get(i).add(Double.parseDouble(tmp[i]));
+						}
+					}					
 				}
 			}
 			br.close();
