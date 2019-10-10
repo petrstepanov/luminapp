@@ -13,6 +13,7 @@
         <!-- Delete the ${build} and ${dist} directory trees -->
         <delete dir="${build}" />
         <delete dir="${dist}" />
+		<delete file="${src}/sources.txt" />
     </target>
  
     <target name="init">
