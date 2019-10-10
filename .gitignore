@@ -1,1 +1,5 @@
+.DS_Store
+build.number
+/dist/
 /bin/
+/src/sources.txt
