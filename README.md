@@ -1,8 +1,8 @@
-# luminapp
+# LuminApp
 
 Application that merges together data from a CCD Spectrometer and and thermometer.
 
-<img src="http://petrstepanov.com/static/screenshot-luminapp.png" alt="LuminApp desktop application" style="margin: 0 auto"/>
+<img src="http://petrstepanov.com/static/screenshot-luminapp.png" alt="LuminApp desktop application" style="display: block; margin: 0 auto"/>
 
 ## Setup instructions
 
